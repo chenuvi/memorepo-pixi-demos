@@ -1,7 +1,3 @@
-[build]
-  base = "/"
-  publish = "apps/mainApp/dist"
-
 # 为子项目配置重定向规则
 [[redirects]]
   from = "/fish-pond/*"
