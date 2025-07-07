@@ -11,7 +11,6 @@
     "dev:choo-choo": "pnpm --filter choo-choo-train dev",
     "dev:spine": "pnpm --filter spine-boy-adventure dev",
     "dev:all": "concurrently \"pnpm --filter fish-pond dev\" \"pnpm --filter choo-choo-train dev\" \"pnpm --filter spine-boy-adventure dev\"",
-    "postinstall": "pnpm install:all",
     "install:all": "pnpm -r install",
     "vercel:deploy:fish-pond": "vercel --scope pnpm --prod --cwd ./apps/fish-pond",
     "vercel:deploy:choo-choo": "vercel --scope pnpm --prod --cwd ./apps/choo-choo-train",
