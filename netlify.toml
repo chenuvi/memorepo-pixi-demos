@@ -1,0 +1,35 @@
+# Netlify配置文件
+[build]
+  command = "node build.js"  # 使用我们的构建脚本
+  publish = "dist"               # 所有项目的构建输出目录
+
+# 重定向规则，确保每个应用都能从自己的子路径访问
+[[redirects]]
+  from = "/fish-pond/*"
+  to = "/fish-pond/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/choo-choo-train/*"
+  to = "/choo-choo-train/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/spine-boy-adventure/*"
+  to = "/spine-boy-adventure/:splat"
+  status = 200
+
+# 页面未找到时重定向到主页
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404
+
+# 在构建时处理的环境变量
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_FLAGS = "--version"  # 避免npm install
+  
+# 使用pnpm作为包管理器  
+[build.lifecycle]
+  onInstall = "corepack enable && corepack prepare pnpm@latest --activate && pnpm install" 
