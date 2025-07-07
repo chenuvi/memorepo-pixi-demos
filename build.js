@@ -12,17 +12,11 @@ const apps = fs.readdirSync(appsDir).filter(
 
 // 创建dist目录
 const distDir = path.join(__dirname, 'dist');
-if (!fs.existsSync(distDir)) {
-  fs.mkdirSync(distDir, { recursive: true });
+if (fs.existsSync(distDir)) {
+  // 清空dist目录
+  fs.rmSync(distDir, { recursive: true, force: true });
 }
-
-// 为每个应用创建构建输出目录
-for (const app of apps) {
-  const appDistDir = path.join(distDir, app);
-  if (!fs.existsSync(appDistDir)) {
-    fs.mkdirSync(appDistDir, { recursive: true });
-  }
-}
+fs.mkdirSync(distDir, { recursive: true });
 
 // 复制文件的辅助函数
 function copyRecursiveSync(src, dest) {
@@ -43,7 +37,7 @@ function copyRecursiveSync(src, dest) {
   }
 }
 
-// 构建每个应用
+// 构建每个应用但不复制
 console.log('开始构建所有应用...');
 for (const app of apps) {
   console.log(`构建 ${app}...`);
@@ -72,48 +66,16 @@ for (const app of apps) {
     
     // 运行构建命令
     execSync(`cd ${appDir} && pnpm build`, { stdio: 'inherit' });
-    
-    // 复制构建输出到主dist目录
-    const appBuildDir = path.join(appDir, 'dist');
-    if (fs.existsSync(appBuildDir)) {
-      // 确保目标目录存在
-      if (!fs.existsSync(path.join(distDir, app))) {
-        fs.mkdirSync(path.join(distDir, app), { recursive: true });
-      }
-      
-      // 复制所有文件
-      copyRecursiveSync(appBuildDir, path.join(distDir, app));
-      console.log(`${app} 构建成功并复制到dist/${app}`);
-      
-      // 确保index.html存在
-      const indexPath = path.join(distDir, app, 'index.html');
-      if (!fs.existsSync(indexPath)) {
-        console.warn(`警告: ${app}/index.html 不存在，创建一个简单的跳转页`);
-        const simpleHtml = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0;url=./">
-  <title>${app}</title>
-</head>
-<body>
-  <p>重定向到应用...</p>
-  <script>window.location.href = "./";</script>
-</body>
-</html>`;
-        fs.writeFileSync(indexPath, simpleHtml);
-      }
-    } else {
-      console.log(`警告: ${app} 的构建输出目录不存在`);
-    }
+    console.log(`${app} 构建成功`);
   } catch (error) {
     console.error(`构建 ${app} 失败:`, error);
   }
 }
 
-console.log('所有应用构建完成!');
+// 创建一个包含所有应用的单一页面
+console.log('创建单一主页面...');
 
-// 创建一个简单的主页面，列出所有应用的链接
+// 创建一个简单的主页面，将所有应用嵌入为iframe
 const indexHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,47 +83,181 @@ const indexHtml = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pixi.js Demos</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
     body {
       font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-    li {
-      margin: 10px 0;
-      padding: 15px;
       background-color: #f5f5f5;
-      border-radius: 5px;
-      transition: all 0.3s ease;
     }
-    li:hover {
-      background-color: #e0e0e0;
-      transform: translateY(-2px);
+    header {
+      background-color: #333;
+      color: white;
+      padding: 20px;
+      text-align: center;
     }
-    a {
-      color: #0066cc;
+    nav {
+      background-color: #444;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
       text-decoration: none;
+      margin: 0 15px;
       font-weight: bold;
+      display: inline-block;
+      padding: 8px 15px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+    nav a:hover {
+      background-color: #555;
+    }
+    nav a.active {
+      background-color: #666;
+    }
+    .content {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .app-container {
+      width: 100%;
+      height: 600px;
+      border: none;
+      display: none;
+    }
+    .app-container.active {
       display: block;
-      font-size: 18px;
+    }
+    .home-content {
+      display: block;
+    }
+    .app-description {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-left: 4px solid #333;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 0.8em;
     }
   </style>
 </head>
 <body>
-  <h1>Pixi.js Demo Projects</h1>
-  <ul>
-    ${apps.map(app => `<li><a href="/${app}/">${app.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</a></li>`).join('\n    ')}
-  </ul>
+  <header>
+    <h1>Pixi.js Demo Projects</h1>
+  </header>
+  
+  <nav id="main-nav">
+    <a href="#home" class="nav-link active" data-target="home">首页</a>
+    ${apps.map(app => `<a href="#${app}" class="nav-link" data-target="${app}">${app.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</a>`).join('\n    ')}
+  </nav>
+  
+  <div class="content">
+    <div id="home" class="home-content app-container active">
+      <h2>欢迎来到 Pixi.js 演示项目集合</h2>
+      <p>请从上方导航选择一个演示项目。</p>
+      
+      <h3>可用演示:</h3>
+      <ul>
+        ${apps.map(app => `<li><strong>${app.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</strong>: <a href="#${app}" class="app-link" data-target="${app}">查看演示</a></li>`).join('\n        ')}
+      </ul>
+    </div>
+    
+    ${apps.map(app => `<iframe id="${app}" src="assets/${app}/index.html" class="app-container" title="${app}"></iframe>`).join('\n    ')}
+  </div>
+  
+  <footer>
+    &copy; ${new Date().getFullYear()} Pixi.js 演示项目 | 版权所有
+  </footer>
+
+  <script>
+    // 简单的路由实现
+    function activateApp(appId) {
+      // 隐藏所有app
+      document.querySelectorAll('.app-container').forEach(app => {
+        app.classList.remove('active');
+      });
+      
+      // 取消所有导航链接激活状态
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      
+      // 激活选中的app
+      const targetApp = document.getElementById(appId);
+      if (targetApp) {
+        targetApp.classList.add('active');
+      } else if (appId === 'home') {
+        document.getElementById('home').classList.add('active');
+      }
+      
+      // 激活对应的导航链接
+      document.querySelector(\`.nav-link[data-target="\${appId}"]\`).classList.add('active');
+    }
+    
+    // 设置导航点击事件
+    document.querySelectorAll('.nav-link, .app-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const targetId = this.getAttribute('data-target');
+        activateApp(targetId);
+      });
+    });
+    
+    // 初始化 - 根据URL哈希选择app
+    function initFromHash() {
+      const hash = window.location.hash.substring(1); // 移除#符号
+      if (hash && (document.getElementById(hash) || hash === 'home')) {
+        activateApp(hash);
+      }
+    }
+    
+    // 监听哈希变化
+    window.addEventListener('hashchange', initFromHash);
+    
+    // 页面加载时初始化
+    initFromHash();
+    
+    // 如果没有哈希，默认显示home
+    if (!window.location.hash) {
+      activateApp('home');
+    }
+  </script>
 </body>
 </html>`;
 
+// 创建assets目录
+const assetsDir = path.join(distDir, 'assets');
+if (!fs.existsSync(assetsDir)) {
+  fs.mkdirSync(assetsDir, { recursive: true });
+}
+
+// 复制每个应用的构建输出到assets目录下的子目录
+for (const app of apps) {
+  const appBuildDir = path.join(appsDir, app, 'dist');
+  if (fs.existsSync(appBuildDir)) {
+    const appAssetsDir = path.join(assetsDir, app);
+    fs.mkdirSync(appAssetsDir, { recursive: true });
+    copyRecursiveSync(appBuildDir, appAssetsDir);
+    console.log(`复制 ${app} 构建输出到 assets/${app}`);
+  }
+}
+
+// 写入主页面
 fs.writeFileSync(path.join(distDir, 'index.html'), indexHtml);
-console.log('主页面已创建'); 
+console.log('单一主页面已创建');
+
+// 创建netlify.toml的副本，确保重定向规则被应用
+const netlifyConfig = fs.readFileSync(path.join(__dirname, 'netlify.toml'), 'utf8');
+fs.writeFileSync(path.join(distDir, '_redirects'), '/* /index.html 200');
+console.log('Netlify重定向规则已创建'); 
