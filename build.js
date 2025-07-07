@@ -10,10 +10,9 @@ const apps = fs.readdirSync(appsDir).filter(
   file => fs.statSync(path.join(appsDir, file)).isDirectory()
 );
 
-// 创建dist目录
+// 清理和创建dist目录
 const distDir = path.join(__dirname, 'dist');
 if (fs.existsSync(distDir)) {
-  // 清空dist目录
   fs.rmSync(distDir, { recursive: true, force: true });
 }
 fs.mkdirSync(distDir, { recursive: true });
@@ -37,12 +36,12 @@ function copyRecursiveSync(src, dest) {
   }
 }
 
-// 构建每个应用
+// 构建所有应用
 console.log('开始构建所有应用...');
 for (const app of apps) {
   console.log(`构建 ${app}...`);
   try {
-    // 确保应用有package.json并且安装了依赖
+    // 确保应用有package.json
     const appDir = path.join(appsDir, app);
     const packageJsonPath = path.join(appDir, 'package.json');
     
@@ -51,7 +50,7 @@ for (const app of apps) {
       continue;
     }
 
-    // 尝试读取package.json检查是否有build脚本
+    // 检查是否有构建脚本
     let packageJson;
     try {
       packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
@@ -65,39 +64,34 @@ for (const app of apps) {
     }
     
     // 运行构建命令
+    console.log(`正在构建 ${app}...`);
     execSync(`cd ${appDir} && pnpm build`, { stdio: 'inherit' });
-    console.log(`${app} 构建成功`);
+    
+    // 复制构建结果到各自的目录
+    const appBuildDir = path.join(appDir, 'dist');
+    const appDistDir = path.join(distDir, app);
+    
+    if (fs.existsSync(appBuildDir)) {
+      fs.mkdirSync(appDistDir, { recursive: true });
+      copyRecursiveSync(appBuildDir, appDistDir);
+      console.log(`${app} 构建成功并复制到 dist/${app}`);
+    } else {
+      console.log(`警告: ${app} 构建输出目录不存在`);
+    }
   } catch (error) {
     console.error(`构建 ${app} 失败:`, error);
   }
 }
 
-// 创建资源目录结构
-console.log('创建资源目录...');
-const assetsDir = path.join(distDir, 'apps');
-if (!fs.existsSync(assetsDir)) {
-  fs.mkdirSync(assetsDir, { recursive: true });
-}
-
-// 复制每个应用的构建输出
-for (const app of apps) {
-  const appBuildDir = path.join(appsDir, app, 'dist');
-  if (fs.existsSync(appBuildDir)) {
-    const appAssetsDir = path.join(assetsDir, app);
-    fs.mkdirSync(appAssetsDir, { recursive: true });
-    copyRecursiveSync(appBuildDir, appAssetsDir);
-    console.log(`复制 ${app} 构建输出到 apps/${app}`);
-  }
-}
+console.log('所有应用构建完成!');
 
 // 创建主页面
-console.log('创建主页面...');
 const indexHtml = `<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pixi.js 演示项目</title>
+  <title>Pixi.js 演示项目集合</title>
   <style>
     * {
       margin: 0;
@@ -106,185 +100,138 @@ const indexHtml = `<!DOCTYPE html>
     }
     body {
       font-family: "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
       background-color: #f5f5f5;
-      overflow: hidden;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
+      padding: 0;
+      margin: 0;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
     }
     header {
       background-color: #333;
-      color: white;
-      padding: 15px;
+      color: #fff;
+      padding: 20px 0;
       text-align: center;
+      margin-bottom: 30px;
     }
-    nav {
-      background-color: #444;
-      padding: 10px;
-      text-align: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    h1 {
+      font-size: 2.5rem;
     }
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 10px;
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    .project-card {
+      background-color: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .project-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+    .card-image {
+      width: 100%;
+      height: 180px;
+      background-color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
       font-weight: bold;
-      display: inline-block;
-      padding: 8px 15px;
-      border-radius: 4px;
-      transition: background-color 0.3s;
-    }
-    nav a:hover {
-      background-color: #555;
-    }
-    nav a.active {
-      background-color: #666;
-    }
-    .content-wrapper {
-      flex: 1;
       overflow: hidden;
       position: relative;
     }
-    .app-container {
+    .card-image img {
       width: 100%;
       height: 100%;
-      border: none;
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
+      object-fit: cover;
     }
-    .app-container.active {
-      display: block;
-    }
-    .home-content {
+    .card-content {
       padding: 20px;
-      max-width: 800px;
-      margin: 0 auto;
-      height: 100%;
-      overflow: auto;
     }
-    .app-list {
-      margin-top: 20px;
+    .card-title {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #333;
     }
-    .app-list li {
-      margin: 15px 0;
-      padding: 20px;
-      background-color: white;
+    .card-description {
+      margin-bottom: 20px;
+      color: #666;
+    }
+    .card-link {
+      display: inline-block;
+      background-color: #0066cc;
+      color: #fff;
+      padding: 10px 20px;
       border-radius: 5px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      list-style-type: none;
-      transition: transform 0.2s;
-    }
-    .app-list li:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    .app-list a {
-      color: #0066cc;
       text-decoration: none;
       font-weight: bold;
-      display: inline-block;
-      margin-top: 10px;
-      padding: 8px 16px;
-      background-color: #f0f0f0;
-      border-radius: 4px;
       transition: background-color 0.3s;
     }
-    .app-list a:hover {
-      background-color: #e0e0e0;
+    .card-link:hover {
+      background-color: #0055aa;
+    }
+    footer {
+      margin-top: 50px;
+      text-align: center;
+      padding: 20px;
+      color: #777;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 768px) {
+      .project-grid {
+        grid-template-columns: 1fr;
+      }
+      .card-image {
+        height: 150px;
+      }
+    }
+    .banner {
+      margin-top: 20px;
+      margin-bottom: 40px;
+      padding: 15px;
+      background-color: #e6f7ff;
+      border-left: 5px solid #1890ff;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>Pixi.js 演示项目</h1>
+    <h1>Pixi.js 演示项目集合</h1>
   </header>
-  
-  <nav id="main-nav">
-    <a href="#home" class="nav-link active" data-target="home">首页</a>
-    ${apps.map(app => `<a href="#${app}" class="nav-link" data-target="${app}">${app.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</a>`).join('\n    ')}
-  </nav>
-  
-  <div class="content-wrapper">
-    <div id="home" class="home-content app-container active">
-      <h2>欢迎来到 Pixi.js 演示项目集合</h2>
-      <p>请从上方导航选择一个演示项目，或点击下方链接查看具体演示。</p>
-      
-      <div class="app-list">
-        <ul>
-          ${apps.map(app => `
-          <li>
-            <h3>${app.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h3>
-            <p>${getAppDescription(app)}</p>
-            <a href="#${app}" class="app-link" data-target="${app}">查看演示</a>
-          </li>`).join('\n          ')}
-        </ul>
-      </div>
+
+  <div class="container">
+    <div class="banner">
+      <p>这是一个使用 Pixi.js 构建的演示项目集合。点击下方卡片可以查看不同的演示项目。</p>
     </div>
     
-    ${apps.map(app => `<iframe id="${app}" src="apps/${app}/index.html" class="app-container" title="${app}" frameborder="0" allow="fullscreen" loading="lazy"></iframe>`).join('\n    ')}
+    <div class="project-grid">
+      ${apps.map(app => `
+      <div class="project-card">
+        <div class="card-image">
+          <img src="${getCardImage(app)}" alt="${app} 预览图">
+        </div>
+        <div class="card-content">
+          <h2 class="card-title">${app.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h2>
+          <p class="card-description">${getAppDescription(app)}</p>
+          <a href="/${app}/" class="card-link">查看演示</a>
+        </div>
+      </div>`).join('')}
+    </div>
   </div>
 
-  <script>
-    // 简单的路由实现
-    function activateApp(appId) {
-      // 隐藏所有app
-      document.querySelectorAll('.app-container').forEach(app => {
-        app.classList.remove('active');
-      });
-      
-      // 取消所有导航链接激活状态
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-      });
-      
-      // 激活选中的app
-      const targetApp = document.getElementById(appId);
-      if (targetApp) {
-        targetApp.classList.add('active');
-        
-        // 如果是iframe，确保它被正确加载
-        if(targetApp.tagName === 'IFRAME' && !targetApp.getAttribute('data-loaded')) {
-          // 重新加载iframe内容
-          targetApp.src = targetApp.getAttribute('src');
-          targetApp.setAttribute('data-loaded', 'true');
-        }
-      } else if (appId === 'home') {
-        document.getElementById('home').classList.add('active');
-      }
-      
-      // 激活对应的导航链接
-      const navLink = document.querySelector(\`.nav-link[data-target="\${appId}"]\`);
-      if (navLink) {
-        navLink.classList.add('active');
-      }
-    }
-    
-    // 设置导航点击事件
-    document.querySelectorAll('.nav-link, .app-link').forEach(link => {
-      link.addEventListener('click', function(e) {
-        const targetId = this.getAttribute('data-target');
-        activateApp(targetId);
-      });
-    });
-    
-    // 初始化 - 根据URL哈希选择app
-    function initFromHash() {
-      const hash = window.location.hash.substring(1); // 移除#符号
-      if (hash && (document.getElementById(hash) || hash === 'home')) {
-        activateApp(hash);
-      } else {
-        activateApp('home');
-      }
-    }
-    
-    // 监听哈希变化
-    window.addEventListener('hashchange', initFromHash);
-    
-    // 页面加载时初始化
-    window.addEventListener('load', initFromHash);
-  </script>
+  <footer>
+    <p>&copy; ${new Date().getFullYear()} Pixi.js 演示项目集合 | 使用 Pixi.js 构建</p>
+  </footer>
 </body>
 </html>`;
 
@@ -292,20 +239,36 @@ const indexHtml = `<!DOCTYPE html>
 fs.writeFileSync(path.join(distDir, 'index.html'), indexHtml);
 console.log('主页面已创建');
 
-// 创建netlify.toml的副本，确保重定向规则被应用
-fs.writeFileSync(path.join(distDir, '_redirects'), '/* /index.html 200');
+// 创建Netlify重定向规则
+// 注意：这里不再使用 /* /index.html 200 规则，而是让每个子应用直接访问
+const redirectsContent = apps.map(app => `/${app}/* /${app}/index.html 200`).join('\n');
+fs.writeFileSync(path.join(distDir, '_redirects'), redirectsContent);
 console.log('Netlify重定向规则已创建');
 
 // 辅助函数：获取应用描述
 function getAppDescription(appName) {
   switch(appName) {
     case 'fish-pond':
-      return '一个美丽的鱼塘场景，包含游动的鱼和水波效果。';
+      return '一个美丽的鱼塘场景，包含游动的鱼和水波效果，展示Pixi.js的图形和动画能力。';
     case 'choo-choo-train':
-      return '一个简单的火车动画演示，展示了Pixi.js的动画能力。';
+      return '一个简单的火车动画演示，展示了Pixi.js的动画和交互能力，适合初学者了解基础功能。';
     case 'spine-boy-adventure':
-      return 'Spine动画角色冒险演示，展示Pixi.js与Spine动画的集成。';
+      return 'Spine动画角色冒险演示，展示Pixi.js与Spine动画的集成，适合了解如何在Web中实现复杂动画。';
     default:
       return '使用Pixi.js构建的交互式演示。';
+  }
+}
+
+// 辅助函数：获取卡片图片
+function getCardImage(appName) {
+  switch(appName) {
+    case 'fish-pond':
+      return 'https://pixijs.io/guides/assets/img/fish.png';
+    case 'choo-choo-train':
+      return 'https://pixijs.io/examples/examples/assets/bunny.png';
+    case 'spine-boy-adventure':
+      return 'https://pixijs.io/examples/examples/assets/pixi-filters/canyon.jpg';
+    default:
+      return 'https://pixijs.io/examples/examples/assets/pixi-logo-small.png';
   }
 } 
