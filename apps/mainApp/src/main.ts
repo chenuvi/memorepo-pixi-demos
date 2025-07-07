@@ -3,13 +3,6 @@ import type { Project } from './types';
 // 判断当前环境
 const isProd = import.meta.env.PROD;
 
-// 各子项目开发端口
-const devPorts: Record<string, number> = {
-  'fish-pond': 5173,
-  'choo-choo-train': 5174,
-  'spine-boy-adventure': 5175
-};
-
 // 项目数据和路径配置
 const projects: Project[] = [
   {
