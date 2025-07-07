@@ -1,6 +1,5 @@
 [build]
   base = "/"
-  command = "pnpm install && npm run build:netlify"
   publish = "apps/mainApp/dist"
 
 # 为子项目配置重定向规则

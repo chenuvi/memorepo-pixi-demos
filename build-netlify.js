@@ -55,6 +55,16 @@ function copyDir(src, dest) {
 
 console.log('开始构建所有项目...');
 
+// 先构建主应用
+console.log('构建主应用...');
+try {
+  execSync('npm run build', { stdio: 'inherit', cwd: config.mainApp.path });
+  console.log('主应用构建成功!');
+} catch (error) {
+  console.error('构建主应用失败:', error);
+  process.exit(1);
+}
+
 // 构建并复制子项目
 for (const project of config.subProjects) {
   console.log(`构建子项目: ${project.name}`);
@@ -73,16 +83,6 @@ for (const project of config.subProjects) {
     console.error(`构建 ${project.name} 失败:`, error);
     process.exit(1);
   }
-}
-
-// 构建主应用
-console.log('构建主应用...');
-try {
-  execSync('npm run build', { stdio: 'inherit', cwd: config.mainApp.path });
-  console.log('主应用构建成功!');
-} catch (error) {
-  console.error('构建主应用失败:', error);
-  process.exit(1);
 }
 
 console.log('所有项目构建完成!'); 
