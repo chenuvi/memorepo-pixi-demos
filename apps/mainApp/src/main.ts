@@ -1,4 +1,4 @@
-import { Project } from './types';
+import type { Project } from './types';
 
 // 判断当前环境
 const isProd = import.meta.env.PROD;
