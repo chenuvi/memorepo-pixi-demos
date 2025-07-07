@@ -5,18 +5,19 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node build.js"
+    "dev:main": "cd apps/mainApp && npm run dev",
+    "build:main": "cd apps/mainApp && npm run build",
+    "build:all": "pnpm -r build",
+    "build:netlify": "node build-netlify.js",
+    "dev:fish-pond": "cd apps/fish-pond && npm run dev",
+    "dev:choo-choo": "cd apps/choo-choo-train && npm run dev",
+    "dev:spine": "cd apps/spine-boy-adventure && npm run dev",
+    "dev:all": "concurrently \"pnpm --filter fish-pond dev\" \"pnpm --filter choo-choo-train dev\" \"pnpm --filter spine-boy-adventure dev\" \"pnpm --filter mainApp dev\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "~5.8.3",
-    "vite": "^7.0.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "pixi.js": "^8.11.0"
-    }
+    "concurrently": "^9.2.0"
   }
 }

@@ -1,0 +1,18 @@
+{
+  "name": "main-app",
+  "version": "1.0.0",
+  "description": "主应用，展示所有子项目",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "pixi.js": "catalog:pixi.js8"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0",
+    "typescript": "catalog:default",
+    "vite": "catalog:default"
+  }
+}
