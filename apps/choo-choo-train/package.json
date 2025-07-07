@@ -1,0 +1,20 @@
+{
+  "name": "choo-choo-train",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "catalog:default",
+    "vite": "catalog:default",
+    "pixi.js": "catalog:pixi.js8"
+  }
+}

@@ -1,0 +1,17 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+
+# 默认 Catalog
+## 顶层 catalog 字段允许用户定义一个名为 default 的目录。
+catalog:
+  typescript: ~5.8.3
+  vite: ^7.0.0
+
+# 具名目录
+## 可以在 catalogs 键下配置具有名称任意选择的多个catalog。
+catalogs:
+  pixi.js8:
+    pixi.js: ^8.11.0
+
+
