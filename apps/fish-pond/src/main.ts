@@ -8,7 +8,7 @@ import { addDisplacementEffect } from "./addDisplacementEffect";
 // Create Application without constructor options
 const app = new Application();
 
-const fishes = [];
+const fishes: any[] = [];
 
 async function setup() {
   // Move all configuration to init()
@@ -72,6 +72,6 @@ async function preload() {
   // Add the animation callbacks to the application's ticker.
   app.ticker.add((time) => {
     animateFishes(app, fishes, time);
-    animateWaterOverlay(app, time);
+    animateWaterOverlay(time);
   });
 })();

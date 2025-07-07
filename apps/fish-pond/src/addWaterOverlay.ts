@@ -20,7 +20,7 @@ export function addWaterOverlay(app: Application) {
   });
 }
 
-export function animateWaterOverlay(app: Application, time: any) {
+export function animateWaterOverlay(time: any) {
   // Extract the delta time from the Ticker object.
   const delta = time.deltaTime * 0.1;
 

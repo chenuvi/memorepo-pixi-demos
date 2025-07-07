@@ -32,10 +32,7 @@ export function addFishes(app: Application, fishes: Sprite[]) {
     fishes.push(fish);
   }
 }
-export function animateFishes(app: Application, fishes: Sprite[], time: any) {
-  // Extract the delta time from the Ticker object.
-  const delta = time.deltaTime;
-
+export function animateFishes(app: Application, fishes: Sprite[], _time: any) {
   // Define the padding around the stage where fishes are considered out of sight.
   const stagePadding = 100;
   const boundWidth = app.screen.width + stagePadding * 2;
