@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "public": true,
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./",
+  "workspaceCommand": "pnpm install"
+} 

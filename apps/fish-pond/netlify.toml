@@ -1,8 +1,10 @@
 [build]
-  command = "pnpm build"
-  publish = "dist"
+  # 为 monorepo 项目设置命令，从根目录执行构建
+  base = "../../"
+  command = "cd apps/fish-pond && pnpm build"
+  publish = "apps/fish-pond/dist"
   # 只在该应用目录下的文件变更时触发构建
-  ignore = "git diff --quiet $COMMIT_REF $CACHED_COMMIT_REF -- . ../shared/ ../../package.json ../../pnpm-workspace.yaml ../../pnpm-lock.yaml"
+  ignore = "git diff --quiet $COMMIT_REF $CACHED_COMMIT_REF -- apps/fish-pond/ packages/shared/ package.json pnpm-workspace.yaml pnpm-lock.yaml"
 
 # 重定向设置，确保SPA路由正常工作
 [[redirects]]
