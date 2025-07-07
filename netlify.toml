@@ -32,4 +32,4 @@
   
 # 使用pnpm作为包管理器  
 [build.lifecycle]
-  onInstall = "corepack enable && corepack prepare pnpm@latest --activate && pnpm install" 
+  onInstall = "corepack enable && corepack prepare pnpm@latest --activate && pnpm install --no-frozen-lockfile" 

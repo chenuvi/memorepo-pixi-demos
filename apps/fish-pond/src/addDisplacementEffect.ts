@@ -1,17 +1,26 @@
-import { DisplacementFilter, Sprite } from "pixi.js";
+import { Application, DisplacementFilter, Sprite } from "pixi.js";
 
-export function addDisplacementEffect(app) {
-  const sprite = Sprite.from("displacement");
+export function addDisplacementEffect(app: Application) {
+  const displacementSprite = Sprite.from("displacement");
 
   // Set the base texture wrap mode to repeat to allow the texture UVs to be tiled and repeated.
-  sprite.texture.baseTexture.wrapMode = "repeat";
+  displacementSprite.texture.baseTexture.wrapMode = "repeat";
+  displacementSprite.scale.set(2);
 
   // Create a displacement filter using the sprite texture.
-  const filter = new DisplacementFilter({
-    sprite,
-    scale: 50,
+  const displacementFilter = new DisplacementFilter({
+    sprite: displacementSprite,
+    scale: 20,
   });
 
   // Add the filter to the stage.
-  app.stage.filters = [filter];
+  app.stage.addChild(displacementSprite);
+  app.stage.filters = [displacementFilter];
+
+  app.ticker.add(() => {
+    displacementSprite.x++;
+    if (displacementSprite.x > displacementSprite.width) {
+      displacementSprite.x = 0;
+    }
+  });
 }

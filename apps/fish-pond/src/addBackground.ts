@@ -1,33 +1,18 @@
-import { Sprite } from "pixi.js";
-import type { Application } from "pixi.js";
+import { Application, Sprite } from "pixi.js";
 
 export function addBackground(app: Application) {
-  // Create a background sprite.
+  // Create a background sprite from the "background" asset id and add it to the stage.
   const background = Sprite.from("background");
-
-  // Center background sprite anchor.
-  background.anchor.set(0.5);
-
-  /**
-   * If the preview is landscape, fill the width of the screen
-   * and apply horizontal scale to the vertical scale for a uniform fit.
-   */
-  if (app.screen.width > app.screen.height) {
-    background.width = app.screen.width * 1.2;
-    background.scale.y = background.scale.x;
-  } else {
-    /**
-     * If the preview is square or portrait, then fill the height of the screen instead
-     * and apply the scaling to the horizontal scale accordingly.
-     */
-    background.height = app.screen.height * 1.2;
-    background.scale.x = background.scale.y;
-  }
-
-  // Position the background sprite in the center of the stage.
-  background.x = app.screen.width / 2;
-  background.y = app.screen.height / 2;
-
-  // Add the background to the stage.
+  
+  // 设置背景图片以覆盖整个屏幕
+  background.width = app.screen.width;
+  background.height = app.screen.height;
+  
   app.stage.addChild(background);
+  
+  // 当窗口大小改变时，调整背景图片大小
+  window.addEventListener("resize", () => {
+    background.width = app.screen.width;
+    background.height = app.screen.height;
+  });
 }

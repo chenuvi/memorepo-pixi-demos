@@ -1,6 +1,6 @@
-import { Container, Sprite } from "pixi.js";
+import { Application, Container, Sprite } from "pixi.js";
 
-export function addFishes(app, fishes) {
+export function addFishes(app: Application, fishes: Sprite[]) {
   const fishContainer = new Container();
   app.stage.addChild(fishContainer);
   const fishCount = 20;
@@ -32,7 +32,7 @@ export function addFishes(app, fishes) {
     fishes.push(fish);
   }
 }
-export function animateFishes(app, fishes, time) {
+export function animateFishes(app: Application, fishes: Sprite[], time: any) {
   // Extract the delta time from the Ticker object.
   const delta = time.deltaTime;
 
@@ -42,7 +42,7 @@ export function animateFishes(app, fishes, time) {
   const boundHeight = app.screen.height + stagePadding * 2;
 
   // Iterate through each fish sprite.
-  fishes.forEach((fish) => {
+  fishes.forEach((fish: Sprite) => {
     // Animate the fish movement direction according to the turn speed.
     fish.direction += fish.turnSpeed * 0.01;
 

@@ -1,4 +1,5 @@
 import { Application, Assets } from "pixi.js";
+import "./types";
 import { addBackground } from "./addBackground";
 import { addFishes, animateFishes } from "./addFish";
 import { addWaterOverlay, animateWaterOverlay } from "./addWaterOverlay";

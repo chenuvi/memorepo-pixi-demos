@@ -13,14 +13,33 @@ const apps = fs.readdirSync(appsDir).filter(
 // 创建dist目录
 const distDir = path.join(__dirname, 'dist');
 if (!fs.existsSync(distDir)) {
-  fs.mkdirSync(distDir);
+  fs.mkdirSync(distDir, { recursive: true });
 }
 
 // 为每个应用创建构建输出目录
 for (const app of apps) {
   const appDistDir = path.join(distDir, app);
   if (!fs.existsSync(appDistDir)) {
-    fs.mkdirSync(appDistDir);
+    fs.mkdirSync(appDistDir, { recursive: true });
+  }
+}
+
+// 复制文件的辅助函数
+function copyRecursiveSync(src, dest) {
+  const exists = fs.existsSync(src);
+  const stats = exists && fs.statSync(src);
+  const isDirectory = exists && stats.isDirectory();
+  
+  if (isDirectory) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
+    fs.readdirSync(src).forEach(function(childItemName) {
+      copyRecursiveSync(path.join(src, childItemName),
+                        path.join(dest, childItemName));
+    });
+  } else {
+    fs.copyFileSync(src, dest);
   }
 }
 
@@ -37,6 +56,19 @@ for (const app of apps) {
       console.log(`跳过 ${app}: 没有package.json文件`);
       continue;
     }
+
+    // 尝试读取package.json检查是否有build脚本
+    let packageJson;
+    try {
+      packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      if (!packageJson.scripts || !packageJson.scripts.build) {
+        console.log(`跳过 ${app}: package.json中没有build脚本`);
+        continue;
+      }
+    } catch (err) {
+      console.error(`读取 ${app} 的package.json失败:`, err);
+      continue;
+    }
     
     // 运行构建命令
     execSync(`cd ${appDir} && pnpm build`, { stdio: 'inherit' });
@@ -44,7 +76,8 @@ for (const app of apps) {
     // 复制构建输出到主dist目录
     const appBuildDir = path.join(appDir, 'dist');
     if (fs.existsSync(appBuildDir)) {
-      execSync(`cp -r ${appBuildDir}/* ${path.join(distDir, app)}/`, { stdio: 'inherit' });
+      // 使用我们的辅助函数代替 cp -r 命令
+      copyRecursiveSync(appBuildDir, path.join(distDir, app));
       console.log(`${app} 构建成功并复制到dist/${app}`);
     } else {
       console.log(`警告: ${app} 的构建输出目录不存在`);
