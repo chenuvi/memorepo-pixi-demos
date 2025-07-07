@@ -1,20 +1,21 @@
-# 为子项目配置重定向规则
-[[redirects]]
-  from = "/fish-pond/*"
-  to = "/fish_pond/:splat"
-  status = 200
+[build]
+  command = "pnpm build:netlify"
+  publish = "mainApp/dist"
+  ignore = "git diff --quiet $COMMIT_REF $CACHED_COMMIT_REF -- mainApp/ build-netlify.js package.json pnpm-workspace.yaml pnpm-lock.yaml"
 
-[[redirects]]
-  from = "/choo-choo-train/*"
-  to = "/choo_choo_train/:splat"
-  status = 200
+# 安装 pnpm
+[[plugins]]
+  package = "@nrwl/workspace/plugins/netlify"
 
-[[redirects]]
-  from = "/spine-boy-adventure/*"
-  to = "/spine_boy_adventure/:splat"
-  status = 200
+# 针对预览环境的配置
+[context.deploy-preview]
+  command = "pnpm build:netlify"
+  
+# 针对分支部署的配置
+[context.branch-deploy]
+  command = "pnpm build:netlify"
 
-# SPA 回退规则
+# 重定向设置，确保SPA路由正常工作
 [[redirects]]
   from = "/*"
   to = "/index.html"

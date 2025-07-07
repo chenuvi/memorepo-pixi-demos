@@ -1,6 +1,7 @@
 packages:
   - "packages/*"
   - "apps/*"
+  - "mainApp"
 
 # 默认 Catalog
 ## 顶层 catalog 字段允许用户定义一个名为 default 的目录。

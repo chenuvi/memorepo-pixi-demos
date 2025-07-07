@@ -7,7 +7,7 @@ const rootDir = __dirname;
 // 构建配置
 const config = {
   mainApp: {
-    path: path.join(rootDir, 'apps', 'mainApp'),
+    path: path.join(rootDir, 'mainApp'),
     distDir: 'dist'
   },
   subProjects: [
@@ -58,7 +58,7 @@ console.log('开始构建所有项目...');
 // 先构建主应用
 console.log('构建主应用...');
 try {
-  execSync('npm run build', { stdio: 'inherit', cwd: config.mainApp.path });
+  execSync('pnpm build', { stdio: 'inherit', cwd: config.mainApp.path });
   console.log('主应用构建成功!');
 } catch (error) {
   console.error('构建主应用失败:', error);
@@ -70,7 +70,7 @@ for (const project of config.subProjects) {
   console.log(`构建子项目: ${project.name}`);
   try {
     // 用绝对路径执行构建
-    execSync('npm run build', { stdio: 'inherit', cwd: project.path });
+    execSync('pnpm build', { stdio: 'inherit', cwd: project.path });
 
     // 将构建结果复制到主应用的公共目录
     const srcDir = path.join(project.path, project.distDir);
