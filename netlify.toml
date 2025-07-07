@@ -3,20 +3,26 @@
   command = "node build.js"  # 使用我们的构建脚本
   publish = "dist"               # 所有项目的构建输出目录
 
-# 重定向规则，确保每个应用都能从自己的子路径访问
+# 重定向规则，将根路径指向主页
+[[redirects]]
+  from = "/"
+  to = "/index.html"
+  status = 200
+
+# 确保每个应用子路径下的所有请求都能正确路由到对应应用的index.html
 [[redirects]]
   from = "/fish-pond/*"
-  to = "/fish-pond/:splat"
+  to = "/fish-pond/index.html"
   status = 200
 
 [[redirects]]
   from = "/choo-choo-train/*"
-  to = "/choo-choo-train/:splat"
+  to = "/choo-choo-train/index.html"
   status = 200
 
 [[redirects]]
   from = "/spine-boy-adventure/*"
-  to = "/spine-boy-adventure/:splat"
+  to = "/spine-boy-adventure/index.html"
   status = 200
 
 # 页面未找到时重定向到主页
@@ -27,7 +33,7 @@
 
 # 在构建时处理的环境变量
 [build.environment]
-  NODE_VERSION = "18"
+  NODE_VERSION = "22"
   NPM_FLAGS = "--version"  # 避免npm install
   
 # 使用pnpm作为包管理器  

@@ -76,9 +76,33 @@ for (const app of apps) {
     // 复制构建输出到主dist目录
     const appBuildDir = path.join(appDir, 'dist');
     if (fs.existsSync(appBuildDir)) {
-      // 使用我们的辅助函数代替 cp -r 命令
+      // 确保目标目录存在
+      if (!fs.existsSync(path.join(distDir, app))) {
+        fs.mkdirSync(path.join(distDir, app), { recursive: true });
+      }
+      
+      // 复制所有文件
       copyRecursiveSync(appBuildDir, path.join(distDir, app));
       console.log(`${app} 构建成功并复制到dist/${app}`);
+      
+      // 确保index.html存在
+      const indexPath = path.join(distDir, app, 'index.html');
+      if (!fs.existsSync(indexPath)) {
+        console.warn(`警告: ${app}/index.html 不存在，创建一个简单的跳转页`);
+        const simpleHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0;url=./">
+  <title>${app}</title>
+</head>
+<body>
+  <p>重定向到应用...</p>
+  <script>window.location.href = "./";</script>
+</body>
+</html>`;
+        fs.writeFileSync(indexPath, simpleHtml);
+      }
     } else {
       console.log(`警告: ${app} 的构建输出目录不存在`);
     }
