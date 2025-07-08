@@ -4,6 +4,7 @@ export default defineConfig({
   base: '/fish_pond/',
   server: {
     port: 5176,
-    open: false
+    open: false,
+    host: '0.0.0.0'
   }
 });

@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/',  // 修改此行
+  base: '/choo_choo_train/',  // 修改此行与nginx配置匹配
   server: {
     port: 5175,
     open: false,
