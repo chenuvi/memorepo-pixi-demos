@@ -10,6 +10,7 @@
     "dev:fish-pond": "pnpm --filter fish-pond dev",
     "dev:choo-choo": "pnpm --filter choo-choo-train dev",
     "dev:spine": "pnpm --filter spine-boy-adventure dev",
+    "dev:all": "concurrently \"pnpm --filter choo-choo-train dev\" \"pnpm --filter fish-pond dev\" \"pnpm --filter spine-boy-adventure dev\"",
     "install:all": "pnpm -r install"
   },
   "keywords": [],
