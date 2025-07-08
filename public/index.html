@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorepo Pixi.js 演示项目</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#8B5CF6',
+                        dark: '#1E293B',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .card-shadow {
+                box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            }
+            .card-hover {
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <header class="bg-dark text-white py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl">
+                <span class="block text-primary">Memorepo Pixi.js</span>
+                <span class="block mt-2 text-white">演示项目集合</span>
+            </h1>
+            <p class="mt-5 max-w-xl mx-auto text-xl text-gray-300">
+                探索基于Pixi.js构建的交互式WebGL动画项目，体验高性能图形渲染的魅力
+            </p>
+        </div>
+    </header>
+
+    <main class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 火车项目 -->
+                <div class="bg-white rounded-lg overflow-hidden card-shadow card-hover">
+                    <div class="h-48 bg-gray-200 relative">
+                        <img src="/choo_choo_train/preview.jpg" alt="火车项目预览" class="w-full h-full object-cover" onerror="this.src='https://picsum.photos/id/1033/800/600'">
+                        <div class="absolute top-3 right-3 bg-primary text-white text-xs font-bold px-2.5 py-0.5 rounded">
+                            动画场景
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">火车项目</h2>
+                        <p class="text-gray-600 mb-4">
+                            夜晚火车场景动画，包含动态山脉、树木和星空背景，展现了平滑的视差滚动效果。
+                        </p>
+                        <a href="/choo_choo_train/" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90">
+                            查看项目
+                            <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 鱼塘项目 -->
+                <div class="bg-white rounded-lg overflow-hidden card-shadow card-hover">
+                    <div class="h-48 bg-gray-200 relative">
+                        <img src="/fish_pond/preview.jpg" alt="鱼塘项目预览" class="w-full h-full object-cover" onerror="this.src='https://picsum.photos/id/1025/800/600'">
+                        <div class="absolute top-3 right-3 bg-secondary text-white text-xs font-bold px-2.5 py-0.5 rounded">
+                            交互动画
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">鱼塘项目</h2>
+                        <p class="text-gray-600 mb-4">
+                            生动的鱼塘模拟动画，包含游动的鱼群和水波纹效果，使用位移滤镜创造沉浸式水下体验。
+                        </p>
+                        <a href="/fish_pond/" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-secondary hover:bg-secondary/90">
+                            查看项目
+                            <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 骨骼男孩项目 -->
+                <div class="bg-white rounded-lg overflow-hidden card-shadow card-hover">
+                    <div class="h-48 bg-gray-200 relative">
+                        <img src="/spine_boy_adventure/preview.jpg" alt="骨骼男孩项目预览" class="w-full h-full object-cover" onerror="this.src='https://picsum.photos/id/1074/800/600'">
+                        <div class="absolute top-3 right-3 bg-accent text-white text-xs font-bold px-2.5 py-0.5 rounded">
+                            即将推出
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">骨骼男孩项目</h2>
+                        <p class="text-gray-600 mb-4">
+                            基于Spine骨骼动画的互动冒险游戏，展示高级角色动画和用户交互功能。
+                        </p>
+                        <a href="/spine_boy_adventure/" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-accent hover:bg-accent/90">
+                            查看项目
+                            <i class="fa fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-dark text-white py-8 px-4 sm:px-6 lg:px-8 mt-12">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-gray-400">© 2023 Memorepo Pixi.js 演示项目. 保留所有权利.</p>
+        </div>
+    </footer>
+</body>
+</html>

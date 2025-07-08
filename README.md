@@ -68,3 +68,12 @@ pnpm build:linux
 2. 在新目录中初始化应用
 3. 创建`vite.config.js`，设置正确的`base`路径
 4. 重新构建和部署 
+
+```nginx
+// 测试配置是否有语法错误：
+sudo nginx -t
+// 更新 nginx 配置文件
+ sudo cp /home/codes/webgl/memorepo-pixi-demos/nginx.conf /etc/nginx/conf.d/memorepo-pixi-demos.conf
+// 重启 nginx
+sudo systemctl restart nginx
+```
