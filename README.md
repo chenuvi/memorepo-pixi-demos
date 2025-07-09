@@ -1,6 +1,13 @@
 # Pixi.js Demos Monorepo
 
-这个项目是一个基于pnpm workspaces的monorepo，包含多个Pixi.js示例应用。
+基于 Pixi.js 和 pnpm workspaces 的 WebGL 动画演示项目集合，包含多个交互式图形应用和统一项目首页。
+
+## 项目概述
+
+- **技术栈**：Pixi.js 8+, TypeScript, Vite, pnpm workspaces
+- **应用数量**：3 个独立演示项目
+- **构建工具**：Vite
+- **部署支持**：Nginx
 
 ## 项目结构
 
@@ -13,9 +20,7 @@ memorepo-pixi-demos/
 ├── packages/            # 共享包
 │   ├── components/      # 共享组件
 │   └── shared/          # 共享工具和依赖
-├── build-all.js         # Linux/MacOS构建脚本
-├── build-all-win.js     # Windows构建脚本
-└── netlify.toml         # Netlify配置
+└──  build-all.js        # 构建脚本
 ```
 
 ## 本地开发
@@ -34,33 +39,10 @@ pnpm dev
 ## 构建所有应用
 
 ```bash
-# Windows
-pnpm build
-
-# Linux/MacOS
-pnpm build:linux
+pnpm build:all
 ```
 
 构建后的文件会输出到根目录的`dist`文件夹中，每个应用的输出位于对应的子目录。
-
-## Netlify部署
-
-项目已配置为在Netlify上一次性部署所有应用。
-
-### 部署步骤
-
-1. 在Netlify创建新站点
-2. 连接到GitHub仓库
-3. 使用以下设置：
-   - 构建命令：已在netlify.toml中配置
-   - 发布目录：已在netlify.toml中配置
-
-部署后，可通过以下路径访问各应用：
-
-- 主页：`https://your-netlify-site.netlify.app/`
-- 鱼塘应用：`https://your-netlify-site.netlify.app/fish-pond/`
-- 火车应用：`https://your-netlify-site.netlify.app/choo-choo-train/`
-- Spine动画应用：`https://your-netlify-site.netlify.app/spine-boy-adventure/`
 
 ## 添加新应用
 
@@ -69,6 +51,8 @@ pnpm build:linux
 3. 创建`vite.config.js`，设置正确的`base`路径
 4. 重新构建和部署 
 
+
+## 项目 Nginx 快捷命令
 ```nginx
 // 测试配置是否有语法错误：
 sudo nginx -t
