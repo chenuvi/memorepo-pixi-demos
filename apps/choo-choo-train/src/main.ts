@@ -5,6 +5,7 @@ import { addMountains } from "./addMountains";
 import { addTrees } from "./addTrees";
 import { addGround } from "./addGround";
 import { addTrain } from "./addTrain";
+import { addSmokes } from "./addSmokes";
 
 (async () => {
   const app = new Application();
@@ -17,8 +18,9 @@ import { addTrain } from "./addTrain";
   document.body.appendChild(app.canvas);
   addStars(app, 50);
   addMoon(app);
-  // addMountains(app);
-  // addTrees(app);
-  // addGround(app);
-  addTrain(app, container)
+  addMountains(app);
+  addTrees(app);
+  addGround(app);
+  addTrain(app, container);
+  addSmokes(app, container);
 })();

@@ -9,7 +9,7 @@ export function addTrain(app: Application, container: Container) {
   carriage.x = -carriage.width;
 
   // Add the head and the carriage to the train container.
-  container.addChild(head);
+  container.addChild(head, carriage);
 
   app.stage.addChild(container);
 
@@ -29,6 +29,13 @@ export function addTrain(app: Application, container: Container) {
 
   // Initially position the train on the y-axis.
   container.y = baseY;
+
+  app.ticker.add((time) => {
+    elapsed += time.deltaTime;
+    const offset =
+      (Math.sin(elapsed * 0.5 * speed) * 0.5 + 0.5) * shakeDistance;
+    container.y = baseY + offset;
+  });
 }
 
 function createTrainHead(app: Application) {
@@ -116,8 +123,33 @@ function createTrainHead(app: Application) {
     )
     .fill({ color: 0x848484 });
 
+  // Define the dimensions of the wheels.
+  const bigWheelRadius = 55;
+  const smallWheelRadius = 35;
+  const wheelGap = 5;
+  const wheelOffsetY = 5;
+
+  // Create all the wheels.
+  const backWheel = createTrainWheel(bigWheelRadius);
+  const midWheel = createTrainWheel(smallWheelRadius);
+  const frontWheel = createTrainWheel(smallWheelRadius);
+
+  // Position the wheels.
+  backWheel.x = bigWheelRadius;
+  backWheel.y = wheelOffsetY;
+  midWheel.x = backWheel.x + bigWheelRadius + smallWheelRadius + wheelGap;
+  midWheel.y = backWheel.y + bigWheelRadius - smallWheelRadius;
+  frontWheel.x = midWheel.x + smallWheelRadius * 2 + wheelGap;
+  frontWheel.y = midWheel.y;
+
   // Add all the parts to the container.
-  container.addChild(graphics);
+  container.addChild(graphics, backWheel, midWheel, frontWheel);
+  app.ticker.add((time) => {
+    const dr = time.deltaTime * 0.15;
+    backWheel.rotation += dr * (smallWheelRadius / bigWheelRadius);
+    midWheel.rotation += dr;
+    frontWheel.rotation += dr;
+  });
   return container;
 }
 
@@ -138,7 +170,7 @@ function createTrainCarriage(app: Application) {
 
   const graphics = new Graphics()
     // Draw the body
-    .roundRect(
+    .filletRect(
       edgeExcess / 2,
       -containerHeight,
       containerWidth,
@@ -146,7 +178,6 @@ function createTrainCarriage(app: Application) {
       containerRadius
     )
     .fill({ color: 0x725f19 })
-
     // Draw the top edge
     .rect(
       0,
@@ -155,7 +186,6 @@ function createTrainCarriage(app: Application) {
       edgeHeight
     )
     .fill({ color: 0x52431c })
-
     // Draw the connectors
     .rect(
       containerWidth + edgeExcess / 2,
@@ -209,5 +239,21 @@ function createTrainWheel(radius: number) {
       .circle(0, 0, radius)
       // Draw the wheel
       .fill({ color: 0x848484 })
+      // Draw the tyre
+      .stroke({ color: 0x121212, width: strokeThickness, alignment: 1 })
+      // Draw the spokes
+      .rect(
+        -strokeThickness / 2,
+        -innerRadius,
+        strokeThickness,
+        innerRadius * 2
+      )
+      .rect(
+        -innerRadius,
+        -strokeThickness / 2,
+        innerRadius * 2,
+        strokeThickness
+      )
+      .fill({ color: 0x4f4f4f })
   );
 }
